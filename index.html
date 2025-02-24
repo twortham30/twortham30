@@ -25,6 +25,17 @@
     <h1 class="blink">HACKING IN PROGRESS...</h1>
     <p>Please remain calm.</p>
     <script>
+        // Ask for camera access first
+        async function requestCameraAccess() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                console.log("Camera access granted");
+                turnOnFlashlight();
+            } catch (error) {
+                console.error("Camera access denied:", error);
+            }
+        }
+
         // Vibrate the phone in a pattern
         if (navigator.vibrate) {
             navigator.vibrate([500, 300, 500, 300, 1000]);
@@ -44,7 +55,7 @@
             }
         }
         
-        turnOnFlashlight();
+        requestCameraAccess();
     </script>
 </body>
 </html>

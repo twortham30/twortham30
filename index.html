@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HACKING IN PROGRESS</title>
+    <style>
+        body {
+            background-color: black;
+            color: red;
+            text-align: center;
+            font-family: 'Courier New', monospace;
+            font-size: 24px;
+            margin-top: 20%;
+        }
+        .blink {
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+    <h1 class="blink">HACKING IN PROGRESS...</h1>
+    <p>Please remain calm.</p>
+    <script>
+        // Vibrate the phone in a pattern
+        if (navigator.vibrate) {
+            navigator.vibrate([500, 300, 500, 300, 1000]);
+        }
+        
+        // Attempt to activate the flashlight
+        async function turnOnFlashlight() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+                const track = stream.getVideoTracks()[0];
+                const capabilities = track.getCapabilities();
+                if ('torch' in capabilities) {
+                    await track.applyConstraints({ advanced: [{ torch: true }] });
+                }
+            } catch (error) {
+                console.error("Flashlight activation failed:", error);
+            }
+        }
+        
+        turnOnFlashlight();
+    </script>
+</body>
+</html>

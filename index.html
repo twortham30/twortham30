@@ -12,6 +12,7 @@
             font-family: 'Courier New', monospace;
             font-size: 24px;
             margin-top: 20%;
+            display: none; /* Hide content until camera access is granted */
         }
         .blink {
             animation: blink 1s infinite;
@@ -19,29 +20,56 @@
         @keyframes blink {
             50% { opacity: 0; }
         }
+        #terminal {
+            white-space: pre-wrap;
+            text-align: left;
+            width: 80%;
+            margin: auto;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body>
-    <h1 class="blink">HACKING IN PROGRESS...</h1>
-    <p>Please remain calm.</p>
+    <div id="terminal"></div>
+    <h1 id="hackMessage" class="blink" style="display: none;">HACKING IN PROGRESS...</h1>
+    <p id="calmMessage" style="display: none;">Please remain calm.</p>
     <script>
-        // Ask for camera access first
         async function requestCameraAccess() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                document.body.style.display = 'block';
                 console.log("Camera access granted");
+                startTerminalTyping();
                 turnOnFlashlight();
             } catch (error) {
                 console.error("Camera access denied:", error);
             }
         }
 
-        // Vibrate the phone in a pattern
-        if (navigator.vibrate) {
-            navigator.vibrate([500, 300, 500, 300, 1000]);
+        function startTerminalTyping() {
+            const terminal = document.getElementById("terminal");
+            const messages = [
+                "Initializing hack...", 
+                "Bypassing security protocols...", 
+                "Injecting payload...", 
+                "Establishing backdoor...", 
+                "Encryption cracked...", 
+                "System compromised!"
+            ];
+            let index = 0;
+            function typeMessage() {
+                if (index < messages.length) {
+                    terminal.innerHTML += messages[index] + "\n";
+                    index++;
+                    setTimeout(typeMessage, 1000);
+                } else {
+                    document.getElementById("hackMessage").style.display = 'block';
+                    document.getElementById("calmMessage").style.display = 'block';
+                }
+            }
+            typeMessage();
         }
         
-        // Attempt to activate the flashlight
         async function turnOnFlashlight() {
             try {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });

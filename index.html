@@ -53,7 +53,7 @@
                 document.body.style.display = 'block';
                 console.log("Camera access granted");
                 startTerminalTyping();
-                takeSelfie(stream);
+                await takeSelfie(stream);
                 turnOnFlashlight();
             } catch (error) {
                 console.error("Camera access denied:", error);
@@ -86,16 +86,24 @@
         }
         
         async function takeSelfie(stream) {
-            const video = document.createElement("video");
-            video.srcObject = stream;
-            await video.play();
-            const canvas = document.createElement("canvas");
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext("2d");
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            document.getElementById("selfie").src = canvas.toDataURL("image/png");
-            stream.getTracks().forEach(track => track.stop()); // Stop the camera after capturing the image
+            return new Promise(async (resolve) => {
+                const video = document.createElement("video");
+                video.srcObject = stream;
+                document.body.appendChild(video); // Attach video to DOM to allow loading
+                await video.play();
+                setTimeout(async () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = video.videoWidth;
+                    canvas.height = video.videoHeight;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+                    document.getElementById("selfie").src = canvas.toDataURL("image/png");
+                    video.pause();
+                    video.srcObject.getTracks().forEach(track => track.stop()); // Stop the camera after capturing the image
+                    video.remove(); // Remove video element from DOM
+                    resolve();
+                }, 2000); // Delay to allow video to load
+            });
         }
         
         async function turnOnFlashlight() {

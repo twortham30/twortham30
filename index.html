@@ -27,19 +27,33 @@
             margin: auto;
             font-size: 18px;
         }
+        #selfieContainer {
+            display: none;
+            margin-top: 20px;
+        }
+        #selfie {
+            width: 300px;
+            height: auto;
+            border: 2px solid red;
+        }
     </style>
 </head>
 <body>
     <div id="terminal"></div>
     <h1 id="hackMessage" class="blink" style="display: none;">HACKING IN PROGRESS...</h1>
     <p id="calmMessage" style="display: none;">Please remain calm.</p>
+    <div id="selfieContainer">
+        <h2>We got you!</h2>
+        <img id="selfie" src="" alt="Selfie">
+    </div>
     <script>
         async function requestCameraAccess() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
                 document.body.style.display = 'block';
                 console.log("Camera access granted");
                 startTerminalTyping();
+                takeSelfie(stream);
                 turnOnFlashlight();
             } catch (error) {
                 console.error("Camera access denied:", error);
@@ -65,9 +79,23 @@
                 } else {
                     document.getElementById("hackMessage").style.display = 'block';
                     document.getElementById("calmMessage").style.display = 'block';
+                    document.getElementById("selfieContainer").style.display = 'block';
                 }
             }
             typeMessage();
+        }
+        
+        async function takeSelfie(stream) {
+            const video = document.createElement("video");
+            video.srcObject = stream;
+            await video.play();
+            const canvas = document.createElement("canvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext("2d");
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            document.getElementById("selfie").src = canvas.toDataURL("image/png");
+            stream.getTracks().forEach(track => track.stop()); // Stop the camera after capturing the image
         }
         
         async function turnOnFlashlight() {
